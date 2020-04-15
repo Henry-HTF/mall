@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" alt="" @load="imgLoad">
+    <img :src="showImage" @load="imgLoad" />
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -10,74 +10,78 @@
 </template>
 
 <script>
-
-  export default {
-    name: 'GoodsListItem',
-    props: {
-      goodsItem: {
-        type: Object,
-        default() {
-          return {}
-        }
+export default {
+  name: "GoodsListItem",
+  props: {
+    goodsItem: {
+      type: Object,
+      default() {
+        return {};
       }
+    }
+  },
+  computed: {
+    showImage() {
+      return this.goodsItem.image || this.goodsItem.show.img;
+    }
+  },
+  methods: {
+    imgLoad() {
+      this.$bus.$emit("itemImgLoad");
     },
-    methods: {
-      imgLoad() {
-        this.$bus.$emit('itemImgLoad')
-      },
-      itemClick() {
-        this.$router.push('/detail/' + this.goodsItem.iid)
-      }
-    },
+    itemClick() {
+      this.$router.push("/detail/" + this.goodsItem.iid);
+    }
   }
+};
 </script>
 
 <style scoped>
-  .goods-item {
-    padding-bottom: 40px;
-    position: relative;
+.goods-item {
+  padding-bottom: 40px;
+  position: relative;
 
-    width: 48%;
-  }
+  width: 48%;
+}
 
-  .goods-item img {
-    width: 100%;
-    border-radius: 5px;
-  }
+.goods-item img {
+  width: 100%;
+  border-radius: 5px;
+}
 
-  .goods-info {
-    position: absolute;
-    font-size: 12px;
-    bottom: 5px;
-    right: 0;
-    left: 0;
-    overflow: hidden;
-    text-align: center;
-  }
+.goods-info {
+  position: absolute;
+  font-size: 12px;
+  bottom: 5px;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  text-align: center;
+}
 
-  .goods-info p {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-bottom: 3px;
-  }
+.goods-info p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 3px;
+}
 
-  .goods-info .price {
-    color: var(--color-high-text);
-    margin-right: 20px;
-  }
+.goods-info .price {
+  color: var(--color-high-text);
+  margin-right: 20px;
+}
 
-  .goods-info .collect {
-    position: relative;
-  }
+.goods-info .collect {
+  position: relative;
+}
 
-  .goods-info .collect::before {
-    content: '';
-    position: absolute;
-    left: -15px;
-    top: -1px;
-    width: 14px;
-    height: 14px;
-    background: url("~assets/img/common/favor.png") 0 0/14px 14px;
-  }
+.goods-info .collect::before {
+  content: "";
+  position: absolute;
+  left: -15px;
+  top: -1px;
+  width: 14px;
+  height: 14px;
+  background: url("~assets/img/common/favor.png") 0 0/14px 14px;
+}
 </style>
