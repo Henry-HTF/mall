@@ -1,15 +1,18 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav" />
-    <scroll class="content" ref="scroll">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav" />
+    <scroll class="content" ref="scroll" @scroll="contentScroll" :probe-type="3">
       <detail-swiper :topImages="topImages" />
       <detail-base-info :goods="goods" />
       <detail-shop-info :shop="shop" />
       <detail-goods-info :detailInfo="detailInfo" @imageLoad="imageLoad" />
-      <detail-param-info :paramInfo="paramInfo" />
-      <detail-comment-info :comment-info="commentInfo" />
-      <goods-list :goods="recommends" />
+      <detail-param-info ref="params" :paramInfo="paramInfo" />
+      <detail-comment-info ref="comment" :comment-info="commentInfo" />
+      <goods-list ref="recommend" :goods="recommends" />
     </scroll>
+    <back-top @click.native="backClick" v-show="isShowBackTop" />
+
+    <detail-bottom-bar></detail-bottom-bar>
   </div>
 </template>
 
@@ -21,9 +24,11 @@ import DetailShopInfo from "./childComps/DetailShopInfo";
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
 import DetailParamInfo from "./childComps/DetailParamInfo";
 import DetailCommentInfo from "./childComps/DetailCommentInfo";
+import DetailBottomBar from "./childComps/DetailBottomBar";
 
 import Scroll from "components/common/scroll/Scroll";
 import GoodsList from "components/content/goods/GoodsList";
+import BackTop from "components/content/backtop/BackTop";
 
 import {
   getDetail,
@@ -44,7 +49,10 @@ export default {
       detailInfo: {},
       paramInfo: {},
       commentInfo: {},
-      recommends: []
+      recommends: [],
+      themeTopYs: [],
+      currentIndex: 0,
+      isShowBackTop: false
     };
   },
   components: {
@@ -56,7 +64,9 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     Scroll,
-    GoodsList
+    GoodsList,
+    DetailBottomBar,
+    BackTop
   },
   created() {
     // 1.保存传入的iid
@@ -89,14 +99,68 @@ export default {
     });
     // 3.请求推荐数据
     getRecommend().then(res => {
-      console.log(res);
+      // console.log(res);
       this.recommends = res.data.list;
     });
   },
   methods: {
     imageLoad() {
       this.$refs.scroll.refresh();
+
+      this.themeTopYs = [];
+      this.themeTopYs.push(0);
+      this.themeTopYs.push(this.$refs.params.$el.offsetTop);
+      this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+      this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+    },
+
+    titleClick(index) {
+      this.$refs.scroll.scrollTo(0, -this.themeTopYs[index] + 44, 300);
+    },
+    // 事件监听相关的方法
+    debounce(fn, delay) {
+      let timer = null;
+      return function(...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+          fn.apply(this, args);
+        }, delay);
+      };
+    },
+    // 监听滚动
+    contentScroll(position) {
+      // console.log(position);
+      // 1.获取Y值
+      const positionY = -position.y;
+      // 2.positionY与主题对比
+      let length = this.themeTopYs.length;
+      for (let i = 0; i < length; i++) {
+        if (
+          this.currentIndex !== i &&
+          ((i < length - 1 &&
+            positionY >= this.themeTopYs[i] &&
+            positionY < this.themeTopYs[i + 1]) ||
+            (i === length - 1 && positionY >= this.themeTopYs[i]))
+        ) {
+          this.currentIndex = i;
+          // console.log(this.currentIndex);
+          this.$refs.nav.currentIndex = this.currentIndex;
+        }
+        // 3.是否显示回到顶部
+        this.isShowBackTop = -position.y > 600;
+      }
+    },
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0);
     }
+  },
+  mounted() {
+    // 防抖函数
+    const refresh = this.debounce(this.$refs.scroll.refresh, 50);
+    // 监听item中图片加载完成
+    this.$bus.$on("detailItemImgLoad", () => {
+      refresh();
+    });
   }
 };
 </script>
@@ -116,6 +180,6 @@ export default {
 }
 
 .content {
-  height: calc(100% - 44px);
+  height: calc(100% - 44px - 58px);
 }
 </style>

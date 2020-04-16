@@ -3,10 +3,14 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <tab-control :titles="['流行', '新款', '精选']" 
-                    @tabClick="tabClick" 
-                    ref="tabControl1" 
-                    class="tab-control" v-show="isTabFixed"/> <!-- 偷天换日大法好呀！！！ -->
+    <tab-control
+      :titles="['流行', '新款', '精选']"
+      @tabClick="tabClick"
+      ref="tabControl1"
+      class="tab-control"
+      v-show="isTabFixed"
+    />
+    <!-- 偷天换日大法好呀！！！ -->
 
     <scroll
       class="content"
@@ -16,12 +20,10 @@
       :pull-up-load="true"
       @pullingUp="loadMore"
     >
-      <home-swiper :banners="banners" @swiperImgLoad="swiperImgLoad"/>
+      <home-swiper :banners="banners" @swiperImgLoad="swiperImgLoad" />
       <recommend-view :recommends="recommends" />
       <feature-view />
-      <tab-control :titles="['流行', '新款', '精选']" 
-                    @tabClick="tabClick" 
-                    ref="tabControl2" />
+      <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabControl2" />
       <goods-list :goods="goods[currentType].list" />
     </scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop" />
@@ -81,7 +83,7 @@ export default {
     // 防抖函数
     const refresh = this.debounce(this.$refs.scroll.refresh, 50);
     // 监听item中图片加载完成
-    this.$bus.$on("itemImgLoad", () => {
+    this.$bus.$on("homeItemImgLoad", () => {
       refresh();
     });
   },
@@ -110,16 +112,15 @@ export default {
       }
       this.$refs.tabControl1.currentIndex = index;
       this.$refs.tabControl2.currentIndex = index;
-
     },
     backClick() {
       this.$refs.scroll.scrollTo(0, 0);
     },
     contentScroll(position) {
       // 判断backtop是否显示
-      this.isShowBackTop = (-position.y) > 600;
+      this.isShowBackTop = -position.y > 600;
       // 判断tabcontrol是否吸顶(position: fiexd)
-      this.isTabFixed = (-position.y) > this.tabOffsetTop;
+      this.isTabFixed = -position.y > this.tabOffsetTop;
     },
     loadMore() {
       this.getHomeGoods(this.currentType);
@@ -127,7 +128,7 @@ export default {
     swiperImgLoad() {
       // 获取组件tabControl的offsetTop (组件标签没有offsetTop属性)
       // 所有组件都有一个属性$el:用于获取组件中的元素
-      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
     },
 
     // 网络请求相关的方法
@@ -154,7 +155,7 @@ export default {
 
 <style scoped>
 #home {
-/*   padding-top: 44px; */
+  /*   padding-top: 44px; */
   height: 100vh;
   position: relative;
 }
