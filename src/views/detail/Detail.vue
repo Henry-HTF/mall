@@ -12,7 +12,7 @@
     </scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop" />
 
-    <detail-bottom-bar></detail-bottom-bar>
+    <detail-bottom-bar @addCart="addToCart" />
   </div>
 </template>
 
@@ -152,6 +152,20 @@ export default {
     },
     backClick() {
       this.$refs.scroll.scrollTo(0, 0);
+    },
+    addToCart() {
+      // 1.获取购物车要展示的信息
+      const product = {};
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+
+      // 2.将商品添加到购物车里
+      // this.$store.cartList.push(product)
+      // this.$store.commit("addCart", product);
+      this.$store.dispatch("addCart", product);
     }
   },
   mounted() {
