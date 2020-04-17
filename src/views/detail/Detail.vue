@@ -161,6 +161,7 @@ export default {
       product.desc = this.goods.desc;
       product.price = this.goods.realPrice;
       product.iid = this.iid;
+      // console.log(product);
 
       // 2.将商品添加到购物车里
       // this.$store.cartList.push(product)
