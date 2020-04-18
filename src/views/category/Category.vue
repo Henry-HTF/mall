@@ -13,6 +13,7 @@
         <div>
           <tab-content-category :subcategories="showSubcategory"></tab-content-category>
           <tab-control :titles="['综合', '新品', '销量']" @itemClick="tabClick"></tab-control>
+          <tab-content-detail :category-detail="showCategoryDetail"></tab-content-detail>
         </div>
       </scroll>
     </div>
@@ -26,6 +27,7 @@ import TabControl from "components/content/tabcontrol/TabControl";
 
 import TabMenu from "./childComps/TabMenu";
 import TabContentCategory from "./childComps/TabContentCategory";
+import TabContentDetail from "./childComps/TabContentDetail";
 
 import {
   getCategory,
@@ -42,7 +44,8 @@ export default {
     Scroll,
     TabControl,
     TabMenu,
-    TabContentCategory
+    TabContentCategory,
+    TabContentDetail
   },
   mixins: [tabControlMixin],
   data() {
@@ -108,6 +111,7 @@ export default {
         // 3.将获取的数据保存下来
         this.categoryData[this.currentIndex].categoryDetail[type] = res;
         this.categoryData = { ...this.categoryData };
+        // console.log(res);
       });
     },
     /**
@@ -121,9 +125,30 @@ export default {
 </script>
 
 <style scoped>
+#category {
+  height: 100vh;
+}
+
 .nav-bar {
   background-color: var(--color-tint);
+  font-weight: 700;
   color: #fff;
-  font-weight: 500;
+  z-index: 999;
+}
+
+.content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44px;
+  bottom: 49px;
+
+  display: flex;
+  overflow: hidden;
+}
+
+#tab-content {
+  height: 100%;
+  flex: 1;
 }
 </style>

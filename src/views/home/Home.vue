@@ -42,6 +42,7 @@ import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backtop/BackTop";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
+import { NEW, POP, SELL, BACKTOP_DISTANCE } from "@/common/const";
 
 export default {
   name: "Home",
@@ -64,7 +65,7 @@ export default {
         new: { page: 0, list: [] },
         sell: { page: 0, list: [] }
       },
-      currentType: "pop",
+      currentType: POP,
       isShowBackTop: false,
       tabOffsetTop: 0,
       isTabFixed: false
@@ -75,9 +76,9 @@ export default {
     this.getHomeMultidata();
 
     // 请求home商品的数据
-    this.getHomeGoods("pop");
-    this.getHomeGoods("new");
-    this.getHomeGoods("sell");
+    this.getHomeGoods(POP);
+    this.getHomeGoods(NEW);
+    this.getHomeGoods(SELL);
   },
   mounted() {
     // 防抖函数
@@ -101,13 +102,13 @@ export default {
     tabClick(index) {
       switch (index) {
         case 0:
-          this.currentType = "pop";
+          this.currentType = POP;
           break;
         case 1:
-          this.currentType = "new";
+          this.currentType = NEW;
           break;
         case 2:
-          this.currentType = "sell";
+          this.currentType = SELL;
           break;
       }
       this.$refs.tabControl1.currentIndex = index;
